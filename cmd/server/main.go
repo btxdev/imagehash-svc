@@ -1,12 +1,21 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/btxdev/imagehash-svc/internal/config"
 	"github.com/btxdev/imagehash-svc/internal/server"
+	"google.golang.org/grpc"
 
 	"go.uber.org/zap"
+
+	pb "github.com/btxdev/imagehash-svc/imagehash"
 )
 
 func main() {
@@ -22,8 +31,52 @@ func main() {
 	defer logger.Sync()
 
 	srv := server.NewServer(logger)
-	if err := srv.Start(cfg); err != nil {
-		logger.Fatal("Failed to start server", zap.Error(err))
+
+	grpcServer := grpc.NewServer()
+	pb.RegisterImagehashServiceServer(grpcServer, srv)
+
+	go func() {
+		lis, err := net.Listen("tcp", net.JoinHostPort(cfg.Server.Host, cfg.Server.Port))
+		if err != nil {
+			logger.Fatal("Failed to listen", zap.Error(err))
+		}
+
+		logger.Info("Starting gRPC server", 
+			zap.String("host", cfg.Server.Host),
+			zap.String("port", cfg.Server.Port),
+		)
+
+		if err := grpcServer.Serve(lis); err != nil {
+			logger.Fatal("Failed to serve gRPC", zap.Error(err))
+		}
+	}()
+
+	waitForShutdown(logger, grpcServer)
+}
+
+func waitForShutdown(logger *zap.Logger, grpcServer *grpc.Server) {
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	logger.Info("Shutting down server...")
+
+	// Graceful shutdown с таймаутом
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stopped := make(chan struct{})
+	go func() {
+		grpcServer.GracefulStop()
+		close(stopped)
+	}()
+
+	select {
+	case <-ctx.Done():
+		logger.Warn("Server shutdown timed out, forcing exit")
+		grpcServer.Stop()
+	case <-stopped:
+		logger.Info("Server stopped gracefully")
 	}
 }
 
