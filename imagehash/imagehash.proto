@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package imagehash;
+
+option go_package = "github.com/btxdev/imagehash-svc/imagehash";
+
+message GetHashRequest {
+    int32 a = 1;
+    int32 b = 2;
+}
+
+message GetHashResponse {
+    int32 c = 1;
+}
+
+service ImagehashService {
+  rpc GetHash(GetHashRequest) returns (GetHashResponse);
+}
