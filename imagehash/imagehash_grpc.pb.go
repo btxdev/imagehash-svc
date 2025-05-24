@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ImagehashServiceClient interface {
-	GetHash(ctx context.Context, in *GetHashRequest, opts ...grpc.CallOption) (*GetHashResponse, error)
+	GetHash(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[GetHashRequest, GetHashResponse], error)
 }
 
 type imagehashServiceClient struct {
@@ -37,21 +37,24 @@ func NewImagehashServiceClient(cc grpc.ClientConnInterface) ImagehashServiceClie
 	return &imagehashServiceClient{cc}
 }
 
-func (c *imagehashServiceClient) GetHash(ctx context.Context, in *GetHashRequest, opts ...grpc.CallOption) (*GetHashResponse, error) {
+func (c *imagehashServiceClient) GetHash(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[GetHashRequest, GetHashResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetHashResponse)
-	err := c.cc.Invoke(ctx, ImagehashService_GetHash_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ImagehashService_ServiceDesc.Streams[0], ImagehashService_GetHash_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[GetHashRequest, GetHashResponse]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImagehashService_GetHashClient = grpc.ClientStreamingClient[GetHashRequest, GetHashResponse]
 
 // ImagehashServiceServer is the server API for ImagehashService service.
 // All implementations must embed UnimplementedImagehashServiceServer
 // for forward compatibility.
 type ImagehashServiceServer interface {
-	GetHash(context.Context, *GetHashRequest) (*GetHashResponse, error)
+	GetHash(grpc.ClientStreamingServer[GetHashRequest, GetHashResponse]) error
 	mustEmbedUnimplementedImagehashServiceServer()
 }
 
@@ -62,8 +65,8 @@ type ImagehashServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedImagehashServiceServer struct{}
 
-func (UnimplementedImagehashServiceServer) GetHash(context.Context, *GetHashRequest) (*GetHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHash not implemented")
+func (UnimplementedImagehashServiceServer) GetHash(grpc.ClientStreamingServer[GetHashRequest, GetHashResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method GetHash not implemented")
 }
 func (UnimplementedImagehashServiceServer) mustEmbedUnimplementedImagehashServiceServer() {}
 func (UnimplementedImagehashServiceServer) testEmbeddedByValue()                          {}
@@ -86,23 +89,12 @@ func RegisterImagehashServiceServer(s grpc.ServiceRegistrar, srv ImagehashServic
 	s.RegisterService(&ImagehashService_ServiceDesc, srv)
 }
 
-func _ImagehashService_GetHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetHashRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ImagehashServiceServer).GetHash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ImagehashService_GetHash_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ImagehashServiceServer).GetHash(ctx, req.(*GetHashRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _ImagehashService_GetHash_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ImagehashServiceServer).GetHash(&grpc.GenericServerStream[GetHashRequest, GetHashResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImagehashService_GetHashServer = grpc.ClientStreamingServer[GetHashRequest, GetHashResponse]
 
 // ImagehashService_ServiceDesc is the grpc.ServiceDesc for ImagehashService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -110,12 +102,13 @@ func _ImagehashService_GetHash_Handler(srv interface{}, ctx context.Context, dec
 var ImagehashService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "imagehash.ImagehashService",
 	HandlerType: (*ImagehashServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "GetHash",
-			Handler:    _ImagehashService_GetHash_Handler,
+			StreamName:    "GetHash",
+			Handler:       _ImagehashService_GetHash_Handler,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "imagehash.proto",
 }

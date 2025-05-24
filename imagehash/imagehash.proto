@@ -4,15 +4,27 @@ package imagehash;
 
 option go_package = "github.com/btxdev/imagehash-svc/imagehash";
 
+message ImageMeta {
+    string filename = 1;
+    string mime_type = 2;
+    uint64 file_size = 3;
+}
+
+message ImageChunk {
+    bytes content = 1;
+}
+
 message GetHashRequest {
-    int32 a = 1;
-    int32 b = 2;
+    oneof data {
+        ImageMeta meta = 1;
+        ImageChunk chunk = 2;
+    }
 }
 
 message GetHashResponse {
-    int32 c = 1;
+    string hash = 1;
 }
 
 service ImagehashService {
-  rpc GetHash(GetHashRequest) returns (GetHashResponse);
+  rpc GetHash(stream GetHashRequest) returns (GetHashResponse);
 }
