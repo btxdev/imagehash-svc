@@ -12,6 +12,7 @@ import (
 	"github.com/btxdev/imagehash-svc/internal/config"
 	"github.com/btxdev/imagehash-svc/internal/server"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"go.uber.org/zap"
 
@@ -34,6 +35,11 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterImagehashServiceServer(grpcServer, srv)
+
+	if cfg.Server.Mode == "development" {
+		reflection.Register(grpcServer)
+		logger.Info("gRPC reflection enabled")
+	}
 
 	go func() {
 		lis, err := net.Listen("tcp", net.JoinHostPort(cfg.Server.Host, cfg.Server.Port))

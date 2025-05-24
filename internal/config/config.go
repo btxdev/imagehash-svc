@@ -8,6 +8,7 @@ type Config struct {
 	Server struct {
 		Host string
 		Port string
+		Mode string
 	}
 	Logger struct {
 		Level    string
@@ -32,9 +33,11 @@ func LoadConfig() (*Config, error) {
 		Server: struct {
 			Host string
 			Port string
+			Mode string
 		}{
 			Host: viper.GetString("SERVER_HOST"),
 			Port: viper.GetString("SERVER_PORT"),
+			Mode: viper.GetString("MODE"),
 		},
 		Logger: struct {
 			Level    string
