@@ -5,10 +5,14 @@ import (
 )
 
 type Config struct {
-	Server struct {
+	Mode string
+	GrpcServer struct {
 		Host string
 		Port string
-		Mode string
+	}
+	HttpServer struct {
+		Host string
+		Port string
 	}
 	Logger struct {
 		Level    string
@@ -30,14 +34,20 @@ func LoadConfig() (*Config, error) {
 	}
 
 	cfg := &Config{
-		Server: struct {
+		Mode: viper.GetString("MODE"),
+		GrpcServer: struct {
 			Host string
 			Port string
-			Mode string
 		}{
-			Host: viper.GetString("SERVER_HOST"),
-			Port: viper.GetString("SERVER_PORT"),
-			Mode: viper.GetString("MODE"),
+			Host: viper.GetString("GRPC_SERVER_HOST"),
+			Port: viper.GetString("GRPC_SERVER_PORT"),
+		},
+		HttpServer: struct {
+			Host string
+			Port string
+		}{
+			Host: viper.GetString("HTTP_SERVER_HOST"),
+			Port: viper.GetString("HTTP_SERVER_PORT"),
 		},
 		Logger: struct {
 			Level    string

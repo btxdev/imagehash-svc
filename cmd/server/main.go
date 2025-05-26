@@ -36,20 +36,20 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterImagehashServiceServer(grpcServer, hashHandler)
 
-	if cfg.Server.Mode == "development" {
+	if cfg.Mode == "development" {
 		reflection.Register(grpcServer)
 		logger.Info("gRPC reflection enabled")
 	}
 
 	go func() {
-		lis, err := net.Listen("tcp", net.JoinHostPort(cfg.Server.Host, cfg.Server.Port))
+		lis, err := net.Listen("tcp", net.JoinHostPort(cfg.GrpcServer.Host, cfg.GrpcServer.Port))
 		if err != nil {
 			logger.Fatal("Failed to listen", zap.Error(err))
 		}
 
 		logger.Info("Starting gRPC server", 
-			zap.String("host", cfg.Server.Host),
-			zap.String("port", cfg.Server.Port),
+			zap.String("host", cfg.GrpcServer.Host),
+			zap.String("port", cfg.GrpcServer.Port),
 		)
 
 		if err := grpcServer.Serve(lis); err != nil {
