@@ -23,6 +23,12 @@ type ImageHashHandler struct {
 	logger *zap.Logger
 }
 
+type imageHashResult struct {
+	average string
+	difference string
+	perception string
+}
+
 func NewImageHashHandler(logger *zap.Logger) *ImageHashHandler {
 	return &ImageHashHandler{logger: logger}
 }
@@ -68,21 +74,61 @@ func (s *ImageHashHandler) GetHash(stream pb.ImagehashService_GetHashServer) err
 		return status.Error(codes.InvalidArgument, "invalid image data")
 	}
 
-	hash, err := s.calculateHash(img)
+	hashes, err := s.calculateHashes(img, meta.GetHashConfig())
 	if err != nil {
 		return status.Error(codes.Internal, "hash computation failed")
 	}
 
 	return stream.SendAndClose(&pb.GetHashResponse{
-		Hash:           hash,
+		Average:           hashes.average,
+		Difference:           hashes.difference,
+		Perception:           hashes.perception,
 	})
 }
 
-func (s *ImageHashHandler) calculateHash(img image.Image) (string, error) {
-	avgHash, err := goimagehash.AverageHash(img)
-	if err != nil {
-		return "", err
+func (s *ImageHashHandler) calculateHashes(img image.Image, cfg *pb.HashConfig) (imageHashResult, error) {
+	average := ""
+	if cfg.Average {
+		res, err := goimagehash.AverageHash(img)
+		if err != nil {
+			return imageHashResult{
+				average: "",
+				difference: "",
+				perception: "",
+			}, err
+		}
+		average = res.ToString()
 	}
-	hash := avgHash.ToString()
-	return hash, nil
+
+	difference := ""
+	if cfg.Difference {
+		res, err := goimagehash.DifferenceHash(img)
+		if err != nil {
+			return imageHashResult{
+				average: average,
+				difference: "",
+				perception: "",
+			}, err
+		}
+		difference = res.ToString()
+	}
+
+	perception := ""
+	if cfg.Perception {
+		res, err := goimagehash.PerceptionHash(img)
+		if err != nil {
+			return imageHashResult{
+				average: average,
+				difference: difference,
+				perception: "",
+			}, err
+		}
+		perception = res.ToString()
+	}
+
+	return imageHashResult{
+		average: average,
+		difference: difference,
+		perception: perception,
+	}, nil
 }

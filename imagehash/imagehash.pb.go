@@ -21,18 +21,79 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type HashConfig struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Average       bool                   `protobuf:"varint,1,opt,name=average,proto3" json:"average,omitempty"`
+	Difference    bool                   `protobuf:"varint,2,opt,name=difference,proto3" json:"difference,omitempty"`
+	Perception    bool                   `protobuf:"varint,3,opt,name=perception,proto3" json:"perception,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HashConfig) Reset() {
+	*x = HashConfig{}
+	mi := &file_imagehash_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HashConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HashConfig) ProtoMessage() {}
+
+func (x *HashConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_imagehash_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HashConfig.ProtoReflect.Descriptor instead.
+func (*HashConfig) Descriptor() ([]byte, []int) {
+	return file_imagehash_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *HashConfig) GetAverage() bool {
+	if x != nil {
+		return x.Average
+	}
+	return false
+}
+
+func (x *HashConfig) GetDifference() bool {
+	if x != nil {
+		return x.Difference
+	}
+	return false
+}
+
+func (x *HashConfig) GetPerception() bool {
+	if x != nil {
+		return x.Perception
+	}
+	return false
+}
+
 type ImageMeta struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filename      string                 `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
 	MimeType      string                 `protobuf:"bytes,2,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	FileSize      uint64                 `protobuf:"varint,3,opt,name=file_size,json=fileSize,proto3" json:"file_size,omitempty"`
+	HashConfig    *HashConfig            `protobuf:"bytes,4,opt,name=hash_config,json=hashConfig,proto3" json:"hash_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ImageMeta) Reset() {
 	*x = ImageMeta{}
-	mi := &file_imagehash_proto_msgTypes[0]
+	mi := &file_imagehash_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +105,7 @@ func (x *ImageMeta) String() string {
 func (*ImageMeta) ProtoMessage() {}
 
 func (x *ImageMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_imagehash_proto_msgTypes[0]
+	mi := &file_imagehash_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +118,7 @@ func (x *ImageMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImageMeta.ProtoReflect.Descriptor instead.
 func (*ImageMeta) Descriptor() ([]byte, []int) {
-	return file_imagehash_proto_rawDescGZIP(), []int{0}
+	return file_imagehash_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ImageMeta) GetFilename() string {
@@ -81,6 +142,13 @@ func (x *ImageMeta) GetFileSize() uint64 {
 	return 0
 }
 
+func (x *ImageMeta) GetHashConfig() *HashConfig {
+	if x != nil {
+		return x.HashConfig
+	}
+	return nil
+}
+
 type ImageChunk struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Content       []byte                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
@@ -90,7 +158,7 @@ type ImageChunk struct {
 
 func (x *ImageChunk) Reset() {
 	*x = ImageChunk{}
-	mi := &file_imagehash_proto_msgTypes[1]
+	mi := &file_imagehash_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -102,7 +170,7 @@ func (x *ImageChunk) String() string {
 func (*ImageChunk) ProtoMessage() {}
 
 func (x *ImageChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_imagehash_proto_msgTypes[1]
+	mi := &file_imagehash_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -115,7 +183,7 @@ func (x *ImageChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImageChunk.ProtoReflect.Descriptor instead.
 func (*ImageChunk) Descriptor() ([]byte, []int) {
-	return file_imagehash_proto_rawDescGZIP(), []int{1}
+	return file_imagehash_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ImageChunk) GetContent() []byte {
@@ -138,7 +206,7 @@ type GetHashRequest struct {
 
 func (x *GetHashRequest) Reset() {
 	*x = GetHashRequest{}
-	mi := &file_imagehash_proto_msgTypes[2]
+	mi := &file_imagehash_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +218,7 @@ func (x *GetHashRequest) String() string {
 func (*GetHashRequest) ProtoMessage() {}
 
 func (x *GetHashRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_imagehash_proto_msgTypes[2]
+	mi := &file_imagehash_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +231,7 @@ func (x *GetHashRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHashRequest.ProtoReflect.Descriptor instead.
 func (*GetHashRequest) Descriptor() ([]byte, []int) {
-	return file_imagehash_proto_rawDescGZIP(), []int{2}
+	return file_imagehash_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetHashRequest) GetData() isGetHashRequest_Data {
@@ -209,14 +277,16 @@ func (*GetHashRequest_Chunk) isGetHashRequest_Data() {}
 
 type GetHashResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Hash          string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Average       string                 `protobuf:"bytes,1,opt,name=average,proto3" json:"average,omitempty"`
+	Difference    string                 `protobuf:"bytes,2,opt,name=difference,proto3" json:"difference,omitempty"`
+	Perception    string                 `protobuf:"bytes,3,opt,name=perception,proto3" json:"perception,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetHashResponse) Reset() {
 	*x = GetHashResponse{}
-	mi := &file_imagehash_proto_msgTypes[3]
+	mi := &file_imagehash_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -228,7 +298,7 @@ func (x *GetHashResponse) String() string {
 func (*GetHashResponse) ProtoMessage() {}
 
 func (x *GetHashResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_imagehash_proto_msgTypes[3]
+	mi := &file_imagehash_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -241,12 +311,26 @@ func (x *GetHashResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHashResponse.ProtoReflect.Descriptor instead.
 func (*GetHashResponse) Descriptor() ([]byte, []int) {
-	return file_imagehash_proto_rawDescGZIP(), []int{3}
+	return file_imagehash_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetHashResponse) GetHash() string {
+func (x *GetHashResponse) GetAverage() string {
 	if x != nil {
-		return x.Hash
+		return x.Average
+	}
+	return ""
+}
+
+func (x *GetHashResponse) GetDifference() string {
+	if x != nil {
+		return x.Difference
+	}
+	return ""
+}
+
+func (x *GetHashResponse) GetPerception() string {
+	if x != nil {
+		return x.Perception
 	}
 	return ""
 }
@@ -255,20 +339,37 @@ var File_imagehash_proto protoreflect.FileDescriptor
 
 const file_imagehash_proto_rawDesc = "" +
 	"\n" +
-	"\x0fimagehash.proto\x12\timagehash\"a\n" +
+	"\x0fimagehash.proto\x12\timagehash\"f\n" +
+	"\n" +
+	"HashConfig\x12\x18\n" +
+	"\aaverage\x18\x01 \x01(\bR\aaverage\x12\x1e\n" +
+	"\n" +
+	"difference\x18\x02 \x01(\bR\n" +
+	"difference\x12\x1e\n" +
+	"\n" +
+	"perception\x18\x03 \x01(\bR\n" +
+	"perception\"\x99\x01\n" +
 	"\tImageMeta\x12\x1a\n" +
 	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1b\n" +
 	"\tmime_type\x18\x02 \x01(\tR\bmimeType\x12\x1b\n" +
-	"\tfile_size\x18\x03 \x01(\x04R\bfileSize\"&\n" +
+	"\tfile_size\x18\x03 \x01(\x04R\bfileSize\x126\n" +
+	"\vhash_config\x18\x04 \x01(\v2\x15.imagehash.HashConfigR\n" +
+	"hashConfig\"&\n" +
 	"\n" +
 	"ImageChunk\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\fR\acontent\"s\n" +
 	"\x0eGetHashRequest\x12*\n" +
 	"\x04meta\x18\x01 \x01(\v2\x14.imagehash.ImageMetaH\x00R\x04meta\x12-\n" +
 	"\x05chunk\x18\x02 \x01(\v2\x15.imagehash.ImageChunkH\x00R\x05chunkB\x06\n" +
-	"\x04data\"%\n" +
-	"\x0fGetHashResponse\x12\x12\n" +
-	"\x04hash\x18\x01 \x01(\tR\x04hash2V\n" +
+	"\x04data\"k\n" +
+	"\x0fGetHashResponse\x12\x18\n" +
+	"\aaverage\x18\x01 \x01(\tR\aaverage\x12\x1e\n" +
+	"\n" +
+	"difference\x18\x02 \x01(\tR\n" +
+	"difference\x12\x1e\n" +
+	"\n" +
+	"perception\x18\x03 \x01(\tR\n" +
+	"perception2V\n" +
 	"\x10ImagehashService\x12B\n" +
 	"\aGetHash\x12\x19.imagehash.GetHashRequest\x1a\x1a.imagehash.GetHashResponse(\x01B+Z)github.com/btxdev/imagehash-svc/imagehashb\x06proto3"
 
@@ -284,23 +385,25 @@ func file_imagehash_proto_rawDescGZIP() []byte {
 	return file_imagehash_proto_rawDescData
 }
 
-var file_imagehash_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_imagehash_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_imagehash_proto_goTypes = []any{
-	(*ImageMeta)(nil),       // 0: imagehash.ImageMeta
-	(*ImageChunk)(nil),      // 1: imagehash.ImageChunk
-	(*GetHashRequest)(nil),  // 2: imagehash.GetHashRequest
-	(*GetHashResponse)(nil), // 3: imagehash.GetHashResponse
+	(*HashConfig)(nil),      // 0: imagehash.HashConfig
+	(*ImageMeta)(nil),       // 1: imagehash.ImageMeta
+	(*ImageChunk)(nil),      // 2: imagehash.ImageChunk
+	(*GetHashRequest)(nil),  // 3: imagehash.GetHashRequest
+	(*GetHashResponse)(nil), // 4: imagehash.GetHashResponse
 }
 var file_imagehash_proto_depIdxs = []int32{
-	0, // 0: imagehash.GetHashRequest.meta:type_name -> imagehash.ImageMeta
-	1, // 1: imagehash.GetHashRequest.chunk:type_name -> imagehash.ImageChunk
-	2, // 2: imagehash.ImagehashService.GetHash:input_type -> imagehash.GetHashRequest
-	3, // 3: imagehash.ImagehashService.GetHash:output_type -> imagehash.GetHashResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // 0: imagehash.ImageMeta.hash_config:type_name -> imagehash.HashConfig
+	1, // 1: imagehash.GetHashRequest.meta:type_name -> imagehash.ImageMeta
+	2, // 2: imagehash.GetHashRequest.chunk:type_name -> imagehash.ImageChunk
+	3, // 3: imagehash.ImagehashService.GetHash:input_type -> imagehash.GetHashRequest
+	4, // 4: imagehash.ImagehashService.GetHash:output_type -> imagehash.GetHashResponse
+	4, // [4:5] is the sub-list for method output_type
+	3, // [3:4] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_imagehash_proto_init() }
@@ -308,7 +411,7 @@ func file_imagehash_proto_init() {
 	if File_imagehash_proto != nil {
 		return
 	}
-	file_imagehash_proto_msgTypes[2].OneofWrappers = []any{
+	file_imagehash_proto_msgTypes[3].OneofWrappers = []any{
 		(*GetHashRequest_Meta)(nil),
 		(*GetHashRequest_Chunk)(nil),
 	}
@@ -318,7 +421,7 @@ func file_imagehash_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_imagehash_proto_rawDesc), len(file_imagehash_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -4,10 +4,17 @@ package imagehash;
 
 option go_package = "github.com/btxdev/imagehash-svc/imagehash";
 
+message HashConfig {
+    bool average = 1;
+    bool difference = 2;
+    bool perception = 3;
+}
+
 message ImageMeta {
     string filename = 1;
     string mime_type = 2;
     uint64 file_size = 3;
+    HashConfig hash_config = 4; 
 }
 
 message ImageChunk {
@@ -22,7 +29,9 @@ message GetHashRequest {
 }
 
 message GetHashResponse {
-    string hash = 1;
+    string average = 1;
+    string difference = 2;
+    string perception = 3;
 }
 
 service ImagehashService {

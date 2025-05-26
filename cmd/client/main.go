@@ -39,6 +39,11 @@ func main() {
 				Filename: filepath.Base(filePath),
 				MimeType: "image/png",
 				FileSize: uint64(stat.Size()),
+				HashConfig: &pb.HashConfig{
+					Average: true,
+					Difference: false,
+					Perception: true,
+				},
 			},
 		},
 	})
@@ -70,5 +75,7 @@ func main() {
 		log.Fatalf("CloseAndRecv error: %v", err)
 	}
 
-	log.Printf("Hash: %s", resp.Hash)
+	log.Printf("Average hash: %s", resp.Average)
+	log.Printf("Difference hash: %s", resp.Difference)
+	log.Printf("Perception hash: %s", resp.Perception)
 }
