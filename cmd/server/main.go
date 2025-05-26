@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/btxdev/imagehash-svc/internal/config"
-	"github.com/btxdev/imagehash-svc/internal/server"
+	"github.com/btxdev/imagehash-svc/internal/imghash"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -31,10 +31,10 @@ func main() {
 	}
 	defer logger.Sync()
 
-	srv := server.NewServer(logger)
+	hashHandler := imghash.NewImageHashHandler(logger)
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterImagehashServiceServer(grpcServer, srv)
+	pb.RegisterImagehashServiceServer(grpcServer, hashHandler)
 
 	if cfg.Server.Mode == "development" {
 		reflection.Register(grpcServer)

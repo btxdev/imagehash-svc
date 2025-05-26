@@ -1,4 +1,4 @@
-package server
+package imghash
 
 import (
 	"bytes"
@@ -18,16 +18,16 @@ import (
 	"github.com/corona10/goimagehash"
 )
 
-type Server struct {
+type ImageHashHandler struct {
 	pb.ImagehashServiceServer
 	logger *zap.Logger
 }
 
-func NewServer(logger *zap.Logger) *Server {
-	return &Server{logger: logger}
+func NewImageHashHandler(logger *zap.Logger) *ImageHashHandler {
+	return &ImageHashHandler{logger: logger}
 }
 
-func (s *Server) GetHash(stream pb.ImagehashService_GetHashServer) error {
+func (s *ImageHashHandler) GetHash(stream pb.ImagehashService_GetHashServer) error {
 	var (
 		meta      *pb.ImageMeta
 		imageData bytes.Buffer
@@ -78,7 +78,7 @@ func (s *Server) GetHash(stream pb.ImagehashService_GetHashServer) error {
 	})
 }
 
-func (s *Server) calculateHash(img image.Image) (string, error) {
+func (s *ImageHashHandler) calculateHash(img image.Image) (string, error) {
 	avgHash, err := goimagehash.AverageHash(img)
 	if err != nil {
 		return "", err
